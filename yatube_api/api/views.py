@@ -9,15 +9,13 @@ from .permissions import IsAuthorOrReadOnly
 
 class CommentViewSet(viewsets.ModelViewSet):
     """Набор представлений модели Comment."""
-    queryset = Comment.objects.all()
     serializer_class = serializers.CommentSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsAuthorOrReadOnly)
 
     def get_queryset(self):
         post_id = self.kwargs.get("post_id")
-        new_queryset = Comment.objects.filter(post=post_id)
-        return new_queryset
+        return Comment.objects.filter(post=post_id)
 
     def perform_create(self, serializer):
         post = get_object_or_404(Post, id=self.kwargs.get("post_id"))
@@ -44,15 +42,13 @@ class PostViewSet(viewsets.ModelViewSet):
 
 class FollowViewSet(viewsets.ModelViewSet):
     """Набор представлений модели Follow."""
-    queryset = Follow.objects.all()
     serializer_class = serializers.FollowSerializer
     permission_classes = (permissions.IsAuthenticated,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('following__username',)
 
     def get_queryset(self):
-        new_queryset = Follow.objects.filter(user=self.request.user)
-        return new_queryset
+        return Follow.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
